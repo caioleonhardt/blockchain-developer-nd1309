@@ -93,7 +93,7 @@ class Blockchain {
 			// validate block
 			let validBlock = await this.validateBlock(i);
 			if (!validBlock) errorLog.push(i);
-			console.log("validated block " + i)
+			//console.log("validated block " + i)
 
 			if (i > 0) {
 				//hash of the previews block
