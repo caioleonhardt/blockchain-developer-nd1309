@@ -46,7 +46,7 @@ class LevelSandbox {
         let self = this;
 
         return new Promise(function (resolve, reject) {
-            let count = 0
+            let count = -1
             self.db.createReadStream()
                 .on('data', function (data) {
                     count++

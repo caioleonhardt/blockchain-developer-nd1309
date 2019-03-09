@@ -21,10 +21,13 @@ const db = new LevelSandbox();
 class Blockchain {
 	constructor() {
 		this.getBlockHeight().then(height => {
-			if (height == 0) {
-				this.addBlock(new Block("First block in the chain - Genesis block")).then(a =>{
-					console.log("genesis block added: ", a)
-				})
+
+			// if height is less then zero, then we need create genesis block
+			if (height == -1) {
+				this.addBlock(new Block("First block in the chain - Genesis block"))
+					.then(block =>{
+						console.log("genesis block added: ", block)
+					});
 			}
 		});
 	}
@@ -38,7 +41,7 @@ class Blockchain {
 		// UTC timestamp
 		newBlock.time = new Date().getTime().toString().slice(0, -3);
 		// previous block hash
-		if (currentHeight > 0) {
+		if (currentHeight >= 0) {
 			const prevBlock = await this.getBlock(currentHeight);
 			newBlock.previousBlockHash = prevBlock.hash;
 		}
@@ -63,9 +66,9 @@ class Blockchain {
 	}
 
 	// validate block
-	validateBlock(blockHeight) {
+	async validateBlock(blockHeight) {
 		// get block object
-		let block = this.getBlock(blockHeight);
+		let block = await this.getBlock(blockHeight);
 		// get block hash
 		let blockHash = block.hash;
 		// remove block hash to test block integrity
@@ -82,14 +85,19 @@ class Blockchain {
 	}
 
 	// Validate blockchain
-	validateChain() {
+	async validateChain() {
 		let errorLog = [];
-		for (var i = 0; i < this.chain.length - 1; i++) {
+		for (var i = 0; i < await this.getBlockHeight() - 1; i++) {
 			// validate block
 			if (!this.validateBlock(i)) errorLog.push(i);
+			
 			// compare blocks hash link
-			let blockHash = this.chain[i].hash;
-			let previousHash = this.chain[i + 1].previousBlockHash;
+			let block = await this.getBlock(i);
+			let blockHash = block.hash;
+
+			let previousBlock = await this.getBlock(i + 1);
+			let previousHash = previousBlock.previousBlockHash;
+			
 			if (blockHash !== previousHash) {
 				errorLog.push(i);
 			}
