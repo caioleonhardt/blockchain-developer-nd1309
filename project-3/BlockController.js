@@ -19,11 +19,11 @@ class BlockController {
     }
 
     /**
-     * Implement a GET Endpoint to retrieve a block by index, url: "/api/block/:height"
+     * Implement a GET Endpoint to retrieve a block by index, url: "/block/:height"
      */
     getBlockByIndex() {
         let self = this;
-        self.app.get("/api/block/:height", (req, res) => {
+        self.app.get("/block/:height", (req, res) => {
             self.blockchain.getBlock(req.params.height).then((result) => {
                 res.send(result);
             }).catch((err) => {
@@ -39,11 +39,11 @@ class BlockController {
     }
     
     /**
-     * Implement a POST Endpoint to add a new Block, url: "/api/block"
+     * Implement a POST Endpoint to add a new Block, url: "/block"
      */
     postNewBlock() {
         let self = this;
-        self.app.post("/api/block", (req, res) => {
+        self.app.post("/block", (req, res) => {
             let body = req.body.body;
 
             if (!body || body.trim().length == 0) {

@@ -22,7 +22,7 @@ Running the application is done using the command:
 
 This application provides two endpoint to interact with the private blockchain and it is configured to run on http://localhost:8000/.
 
-# GET /api/block/:height
+# GET /block/:height
 ------
 
 * **Method:** `GET`
@@ -48,7 +48,7 @@ This application provides two endpoint to interact with the private blockchain a
 | 404    | { "error": "Block Not Found"}                |
 | 500    | { "error":  "Unexpected error occurred"}     |
 
-# POST /api/block
+# POST /block
 ------
 * **Method:** `POST`
 * **Body:** `{ "body": "Body Payload" } `
