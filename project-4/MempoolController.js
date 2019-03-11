@@ -10,6 +10,7 @@ class MempoolController {
         this.mempool = mempool;
 
         this.requestValidation();
+        this.validate();
     }
 
     requestValidation() {
@@ -44,8 +45,29 @@ class MempoolController {
         });
     }
 
-    removeValidationRequest(walletAddress) {
-        console.log('removing', walletAddress);
+    validate() {
+        let self = this;
+        self.app.post("/message-signature/validate", (req, res) => {
+            if (!req.body.address) {
+                res.status(400).send({ 'error': 'Required address parameter' });
+                return;
+            }
+
+            if (!req.body.signature) {
+                res.status(400).send({ 'error': 'Required signature parameter' });
+                return;
+            }
+
+            self.mempool.validateRequestByWallet(req.body.address, req.body.signature).then((result) => {
+                if (!result) res.status(404).send("Address not found");
+
+                res.send(result);
+            }).catch((err) => {
+                console.error(err);
+                res.status(500).send({ 'error': 'Unexpected error occurred' });
+            });
+
+        });
     }
 }
 
