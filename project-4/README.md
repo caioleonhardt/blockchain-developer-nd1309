@@ -1,6 +1,6 @@
-# Project 3: Connect Private Blockchain to Front-End Client via APIs
+# Project 4: Secure Digital Assets on a Private Blockchain
 
-This project provides a private blockchain and RESTful API to create and retrieve blocks.
+This project provides a Star Registry Service that allows users to claim ownership of their favorite star in the night sky.
 
 ## Requirements
 
