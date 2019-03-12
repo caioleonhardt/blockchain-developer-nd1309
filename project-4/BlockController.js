@@ -22,6 +22,7 @@ class BlockController {
         this.getBlockByIndex();
         this.postNewBlock();
         this.getStarBlockByHash();
+        this.getStarBlockByAddress();
     }
 
     /**
@@ -67,7 +68,7 @@ class BlockController {
     /**
      * Implement a GET Endpoint to retrieve a block by wallet address, url: "/stars/address:[ADDRESS]"
      */
-    getStarBlockByHash() {
+    getStarBlockByAddress() {
         let self = this;
         self.app.get("/stars/address:ADDRESS", (req, res) => {
             self.blockchain.getBlockByWalletAddress(req.params.ADDRESS.slice(1)).then((result) => {
@@ -120,7 +121,7 @@ class BlockController {
                       dec: DEC,
                       mag: MAG,
                       cen: CEN,
-                      story: Buffer(req.body.star.story).toString('hex')
+                      story: Buffer.from(req.body.star.story, "ascii").toString('hex')
                       }
         };
             let newBlock = new Block(body);

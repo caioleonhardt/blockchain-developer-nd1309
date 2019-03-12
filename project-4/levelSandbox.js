@@ -41,7 +41,7 @@ class LevelSandbox {
                 .on('data', function (data) {
                     let blockObj = JSON.parse(data.value);
                     if (blockObj.hash === hash) {
-                        
+
                         blockObj.body.star.storyDecoded = hex2ascii(blockObj.body.star.story);
                         block = blockObj;
                     }
@@ -55,28 +55,28 @@ class LevelSandbox {
         });
     }
 
-        // Get block by hash
-        getBlockByWalletAddress(walletAddress) {
-            let self = this;
-            let blocks = [];
-            return new Promise(function (resolve, reject) {
-                self.db.createReadStream()
-                    .on('data', function (data) {
-                        let blockObj = JSON.parse(data.value);
-                        if (blockObj.body.address === walletAddress) {
-                            
-                            blockObj.body.star.storyDecoded = hex2ascii(blockObj.body.star.story);
-                            blocks.push(blockObj);
-                        }
-                    })
-                    .on('error', function (err) {
-                        reject(err)
-                    })
-                    .on('close', function () {
-                        resolve(blocks);
-                    });
-            });
-        }
+    // Get block by hash
+    getBlockByWalletAddress(walletAddress) {
+        let self = this;
+        let blocks = [];
+        return new Promise(function (resolve, reject) {
+            self.db.createReadStream()
+                .on('data', function (data) {
+                    let blockObj = JSON.parse(data.value);
+                    if (blockObj.body.address === walletAddress) {
+
+                        blockObj.body.star.storyDecoded = hex2ascii(blockObj.body.star.story);
+                        blocks.push(blockObj);
+                    }
+                })
+                .on('error', function (err) {
+                    reject(err)
+                })
+                .on('close', function () {
+                    resolve(blocks);
+                });
+        });
+    }
 
     // Add data to levelDB with key and value (Promise)
     addLevelDBData(key, value) {

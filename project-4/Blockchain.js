@@ -24,7 +24,12 @@ class Blockchain {
 
 			// if height is less then zero, then we need create genesis block
 			if (height == -1) {
-				this.addBlock(new Block("First block in the chain - Genesis block"))
+				this.addBlock(new Block({
+					"address" : "",
+					"star" : {
+						"story" : Buffer.from("First block in the chain - Genesis block", "ascii").toString('hex')
+					}
+				}))
 					.then(block => {
 						console.log("genesis block added: ", block)
 					});
