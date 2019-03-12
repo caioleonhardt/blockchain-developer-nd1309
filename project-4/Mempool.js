@@ -45,6 +45,10 @@ class Mempool {
         return this.mempool.find(mem => mem.walletAddress = address);
     }
     
+    searchValidAdressByWallet(address) {
+        return this.mempoolValid.find(mem => mem.status.address = address);
+    }
+
     async validateRequestByWallet(address, signature) {
         let self = this;
         let memAddress = this.searchAdressByWallet(address);

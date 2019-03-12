@@ -1,5 +1,7 @@
 const SHA256 = require('crypto-js/sha256');
 const Block = require('./Block');
+const Blockchain = require('./Blockchain');
+const Mempool = require('./Mempool');
 
 /**
  * Controller Definition to encapsulate routes to work with blocks
@@ -9,17 +11,17 @@ class BlockController {
     /**
      * Constructor to create a new BlockController, you need to initialize here all your endpoints
      * @param {*} app 
-     * @param {*} blockchain
+     * @param {Blockchain} blockchain
+     * @param {Mempool} mempool
      */
-    constructor(app, blockchain) {
+    constructor(app, blockchain, mempool) {
         this.app = app;
         this.blockchain = blockchain;
+        this.mempool = mempool;
+
         this.getBlockByIndex();
         this.postNewBlock();
-
-        // internal resources
-        this.mempool = [];
-        this.timeoutRequests = [];
+        this.getStarBlockByHash();
     }
 
     /**
@@ -43,22 +45,90 @@ class BlockController {
     }
 
     /**
+     * Implement a GET Endpoint to retrieve a block by hash, url: "/stars/hash:[HASH]"
+     */
+    getStarBlockByHash() {
+        let self = this;
+        self.app.get("/stars/hash:HASH", (req, res) => {
+            self.blockchain.getBlockByHash(req.params.HASH.slice(1)).then((result) => {
+                res.send(result);
+            }).catch((err) => {
+                if (err.notFound) {
+                    res.status(404).send({ 'error': 'Block not found' });
+                    return;
+                }
+
+                console.error(err.stack);
+                res.status(500).send({ 'error': 'Unexpected error occurred' });
+            });
+        });
+    }
+
+    /**
+     * Implement a GET Endpoint to retrieve a block by wallet address, url: "/stars/address:[ADDRESS]"
+     */
+    getStarBlockByHash() {
+        let self = this;
+        self.app.get("/stars/address:ADDRESS", (req, res) => {
+            self.blockchain.getBlockByWalletAddress(req.params.ADDRESS.slice(1)).then((result) => {
+                res.send(result);
+            }).catch((err) => {
+                if (err.notFound) {
+                    res.status(404).send({ 'error': 'Block not found' });
+                    return;
+                }
+
+                console.error(err.stack);
+                res.status(500).send({ 'error': 'Unexpected error occurred' });
+            });
+        });
+    }
+
+    /**
      * Implement a POST Endpoint to add a new Block, url: "/block"
      */
     postNewBlock() {
         let self = this;
         self.app.post("/block", (req, res) => {
-            let body = req.body.body;
+            let address = req.body.address;
 
-            if (!body || body.trim().length == 0) {
-                res.status(400).send({ 'error': "Invalid body payload" });
+            if (!address || address.trim().length == 0) {
+                res.status(400).send({ 'error': "Invalid adress" });
                 return;
             }
 
+            let validAddress = self.mempool.searchValidAdressByWallet(address);
+            if (!validAddress || !validAddress.status.messageSignature) {
+                res.status(400).send({ 'error': "Invalid message signature" });
+                return;
+            }
+
+            let RA = req.body.star.ra;
+            let DEC = req.body.star.dec;
+            let MAG = req.body.star.mag;
+            let CEN = req.body.star.cen;
+
+            if (!RA || !DEC) {
+                res.status(400).send({ 'error': "Required RA and DEC" });
+                return;
+            }
+
+            let body = {
+                address: req.body.address,
+                star: {
+                      ra: RA,
+                      dec: DEC,
+                      mag: MAG,
+                      cen: CEN,
+                      story: Buffer(req.body.star.story).toString('hex')
+                      }
+        };
             let newBlock = new Block(body);
 
             self.blockchain.addBlock(newBlock).then((result) => {
-                res.status(201).send(newBlock);
+                let block = JSON.parse(result);
+                
+                res.status(201).send(block);
             }).catch((err) => {
                 console.error(err.stack);
                 res.status(500).send({ 'error': 'Unexpected error occurred' });
@@ -87,4 +157,4 @@ class BlockController {
  * @param {*} app 
  * @param {*} blockchain
  */
-module.exports = (app, blockchain) => { return new BlockController(app, blockchain); }
+module.exports = (app, blockchain, mempool) => { return new BlockController(app, blockchain, mempool); }

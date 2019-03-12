@@ -25,7 +25,7 @@ class Blockchain {
 			// if height is less then zero, then we need create genesis block
 			if (height == -1) {
 				this.addBlock(new Block("First block in the chain - Genesis block"))
-					.then(block =>{
+					.then(block => {
 						console.log("genesis block added: ", block)
 					});
 			}
@@ -62,7 +62,17 @@ class Blockchain {
 
 	// get block
 	async getBlock(blockHeight) {
-		return JSON.parse(await db.getLevelDBData(blockHeight));
+		return await db.getLevelDBData(blockHeight);
+	}
+
+	// get block
+	async getBlockByHash(hash) {
+		return await db.getBlockByHash(hash);
+	}
+
+	// get block
+	async getBlockByWalletAddress(walletAddress) {
+		return await db.getBlockByWalletAddress(walletAddress);
 	}
 
 	// validate block
@@ -89,7 +99,7 @@ class Blockchain {
 		let errorLog = [];
 		let height = await this.getBlockHeight();
 
-		for (var i = 0; i <=  height; i++) {
+		for (var i = 0; i <= height; i++) {
 			// validate block
 			let validBlock = await this.validateBlock(i);
 			if (!validBlock) errorLog.push(i);
@@ -97,8 +107,8 @@ class Blockchain {
 
 			if (i > 0) {
 				//hash of the previews block
-				let previousBlock = await this.getBlock(i-1);
-				
+				let previousBlock = await this.getBlock(i - 1);
+
 				// compare blocks hash link
 				let block = await this.getBlock(i);
 

@@ -44,7 +44,7 @@ class BlockAPI {
      * Initilization of all the controllers
      */
 	initControllers() {
-		require("./BlockController")(this.app, this.blockchain);
+		require("./BlockController")(this.app, this.blockchain, this.mempool);
 		require("./MempoolController")(this.app, this.mempool);
 	}
 
