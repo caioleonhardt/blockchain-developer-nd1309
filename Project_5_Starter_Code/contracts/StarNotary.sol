@@ -14,8 +14,8 @@ contract StarNotary is ERC721 {
     // Implement Task 1 Add a name and symbol properties
     // name: Is a short name to your token
     // symbol: Is a short string like 'USD' -> 'American Dollar'
-    string public constant name = "Caio Star Token";
-    string public constant symbol = "CST";
+    string public constant tokenName = "Caio Star Token";
+    string public constant tokenSymbol = "CST";
 
     // mapping the Star with the Owner Address
     mapping(uint256 => Star) public tokenIdToStarInfo;
